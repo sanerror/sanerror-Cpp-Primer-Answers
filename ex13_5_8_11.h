@@ -6,8 +6,9 @@ public:
 		ps(new std::string(s)), i(0) {}
 	HasPtr(const HasPtr& a) : ps(new std::string(*(a.ps))), i(a.i) {}
 	HasPtr& HasPtr::operator=(const HasPtr& a) {
+		auto newp = new std::string(*(a.ps));
 		delete ps;
-		ps = new std::string(*(a.ps));
+		ps = newp;
 		i = a.i;
 		return *this;
 	}
