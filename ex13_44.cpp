@@ -5,7 +5,7 @@ std::allocator<char> String::alloc;
 
 std::pair<char*, char*> String::alloc_n_copy(const char *a, const char *b) {
 	auto newdata = alloc.allocate(b - a + 1);
-	alloc.construct(newdata + (b - a + 1), '\0');
+	alloc.construct(newdata + (b - a), '\0');
 	return{ newdata, std::uninitialized_copy(a, b, newdata) };
 }
 
