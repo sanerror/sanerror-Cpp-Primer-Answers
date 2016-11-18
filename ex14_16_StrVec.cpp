@@ -81,7 +81,7 @@ StrVec& StrVec::operator=(const StrVec &s) {
 bool operator==(const StrVec& lhs, const StrVec& rhs) {
 	if (lhs.size() == rhs.size()) {
 		for (auto i = lhs.elements, j = rhs.elements; 
-		i != lhs.first_free, j != rhs.first_free; ++i, ++j)
+		i != lhs.first_free && j != rhs.first_free; ++i, ++j)
 			if (*i != *j)
 				return false;
 	}
