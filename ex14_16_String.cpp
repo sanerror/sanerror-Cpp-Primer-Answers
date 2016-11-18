@@ -45,9 +45,9 @@ String::~String() {
 }
 
 bool operator==(const String& lhs, const String& rhs) {
-	return strcmp(lhs.elements, rhs.elements);
+	return !strcmp(lhs.elements, rhs.elements);
 }
 
 bool operator!=(const String& lhs, const String& rhs) {
-	return (lhs != rhs);
+	return !(lhs == rhs);
 }
