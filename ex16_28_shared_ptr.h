@@ -3,6 +3,7 @@
 
 #include "ex16_28_delete.h"
 #include <iostream>
+#include <memory>
 #include <functional>
 
 template <typename T> class share_point;
@@ -21,6 +22,7 @@ class share_point {
 public:
 	share_point();
 	explicit share_point(T* raw_ptr);
+	explicit share_point(std::shared_ptr<T>&& sp);
 	share_point(const share_point & sp);
 	share_point(share_point && sp) noexcept;
 	~share_point() { decrement_n_destroy(); }
@@ -64,6 +66,17 @@ share_point<T>::share_point(T* raw_ptr) :
 	ptr(raw_ptr), ref_count(new std::size_t(1)), deleter(Delete()) {}
 
 template <typename T>
+share_point<T>::share_point(std::shared_ptr<T>&& sp) {
+	if (sp.unique()) {
+		*this = share_point(new T(*sp));
+	}
+	else {
+		throw runtime_error(
+			"only unique and rvalue referencecan transfer ownership");
+	}
+}
+
+template <typename T>
 share_point<T>::share_point(const share_point & sp) :
 	ptr(sp.ptr), ref_count(sp.ref_count), deleter(sp.deleter)
 {
@@ -88,7 +101,7 @@ share_point<T>& share_point<T>::operator=(const share_point &rhs) {
 
 template <typename T>
 share_point<T>& share_point<T>::operator=(share_point &&rhs) noexcept {
-	swap(*this, rhs);
+	::swap(*this, rhs);
 	rhs.decrement_n_destroy();
 	return *this;
 }
