@@ -4,7 +4,7 @@
 #include <iostream>
 #include "ex16_28_delete.h"
 
-template <typename T, typename D = Delete> class unique_point;
+template <typename T, typename D> class unique_point;
 template <typename T, typename D = Delete>
 void swap(unique_point<T, D>& lhs, unique_point<T, D>& rhs) {
 	std::swap(lhs.ptr, rhs.ptr);
@@ -13,7 +13,7 @@ void swap(unique_point<T, D>& lhs, unique_point<T, D>& rhs) {
 
 template <typename T, typename D = Delete>
 class unique_point {
-	friend swap(T, D)(unique_point& lhs, unique_point& rhs);
+	friend void swap<T, D>(unique_point& lhs, unique_point& rhs);
 
 public:
 	// delete: copy constructor and assignment
@@ -30,12 +30,12 @@ public:
 	unique_point& operator = (unique_point&& rhs) noexcept;
 	unique_point& operator = (std::nullptr_t n) noexcept;
 	T& operator*() const { return *ptr; }
-	T* operator->() const { return &*ptr; }
+	T* operator->() const { return &this->operator*(); }
 	operator bool() const { return ptr ? true : false; }
 
 	// other function
 	T* get() const noexcept { return ptr; }
-	void swap(unique_point &rhs) { swap(*this, rhs); }
+	void swap(unique_point &rhs) { ::swap(*this, rhs); }
 	void reset() { deleter(ptr); ptr = nullptr; }
 	void reset(T* p) { deleter(ptr); ptr = p; }
 	T* release();

@@ -7,8 +7,8 @@
 
 template <typename T> class share_point;
 
-template <typaname T>
-void swap(share_point &lhs, share_point &rhs) {
+template <typename T>
+void swap(share_point<T> &lhs, share_point<T> &rhs) {
 	std::swap(lhs.ptr, rhs.ptr);
 	std::swap(lhs.ref_count, rhs.ref_count);
 	std::swap(lhs.deleter, rhs.deleter);
@@ -16,6 +16,8 @@ void swap(share_point &lhs, share_point &rhs) {
 
 template <typename T>
 class share_point {
+	friend void swap<T>(share_point<T> &lhs, share_point<T> &rhs);
+
 public:
 	share_point();
 	explicit share_point(T* raw_ptr);
@@ -28,7 +30,7 @@ public:
 	T& operator*() const { return *ptr; }
 	T* operator->() const { return &*ptr; } // something wrong?
 	std::size_t use_count() const { return *ref_count; }
-	void swap(share_point& rhs) { swap(*this, rhs); }
+	void swap(share_point& rhs) { ::swap(*this, rhs); }
 	void reset() { decrement_n_destroy(); }
 	void reset(T* p);
 	void reset(T* p, const std::function<void(T*)>& d);
@@ -76,7 +78,7 @@ share_point<T>::share_point(share_point && sp) noexcept :
 }
 
 template <typename T>
-share_point& share_point<T>::operator=(const share_point &rhs) {
+share_point<T>& share_point<T>::operator=(const share_point &rhs) {
 	++*rhs.ref_count;
 	decrement_n_destroy();
 	ptr = rhs.ptr;
@@ -85,7 +87,7 @@ share_point& share_point<T>::operator=(const share_point &rhs) {
 }
 
 template <typename T>
-share_point& share_point<T>::operator=(share_point &&rhs) noexcept {
+share_point<T>& share_point<T>::operator=(share_point &&rhs) noexcept {
 	swap(*this, rhs);
 	rhs.decrement_n_destroy();
 	return *this;
