@@ -4,7 +4,11 @@
 #include <string>
 #include <iostream>
 
+template <typename T> class std::hash;
+
 class Sales_data {
+	friend class std::hash<Sales_data>;
+
 	friend std::istream& read(std::istream& is, Sales_data& item);
 	friend std::ostream& print(std::ostream& os, const Sales_data& item);
 	friend Sales_data add(const Sales_data& lhs, const Sales_data& rhs);
@@ -13,6 +17,7 @@ class Sales_data {
 	friend std::istream& operator>>(std::istream &is, Sales_data &item);
 	friend Sales_data& operator+(const Sales_data &item1, const Sales_data &item2);
 	friend Sales_data& operator-(const Sales_data &item1, const Sales_data &item2);
+	friend bool operator==(const Sales_data &item1, const Sales_data &item2);
 
 public:
 	Sales_data() = default;
@@ -46,7 +51,8 @@ std::istream& read(std::istream& is, Sales_data& item) {
 }
 
 std::ostream& print(std::ostream& os, const Sales_data& item) {
-	os << item.bookNo << " " << item.units_sold << " " << item.revenue;
+	os << item.bookNo << " " << item.units_sold << " " << item.revenue 
+		<< std::endl;
 	return os;
 }
 
@@ -115,5 +121,10 @@ inline double Sales_data::avg_price() const {
 	return units_sold ? revenue / units_sold : 0;
 }
 
+bool operator==(const Sales_data &item1, const Sales_data &item2) {
+	return item1.bookNo == item2.bookNo &&
+		item1.units_sold == item2.units_sold &&
+		item1.revenue == item2.revenue;
+}
 
 #endif
